@@ -119,9 +119,11 @@ test-cli:
 	rm -r test_cli
 	@echo ""
 
-test-js: node-version-check
+test-js-build: node-version-check
 	@echo "--> Building static assets"
 	@$(WEBPACK) --profile --json > .artifacts/webpack-stats.json
+
+test-js: node-version-check
 	@echo "--> Running JavaScript tests"
 	@$(YARN) run test-ci
 	@echo ""
@@ -202,7 +204,7 @@ publish:
 	python setup.py sdist bdist_wheel upload
 
 
-.PHONY: develop build reset-db clean setup-git node-version-check install-yarn-pkgs install-sentry-dev build-js-po locale update-transifex build-platform-assets test-cli test-js test-styleguide test-python test-snuba test-symbolicator test-acceptance lint lint-python lint-js publish
+.PHONY: develop build reset-db clean setup-git node-version-check install-yarn-pkgs install-sentry-dev build-js-po locale update-transifex build-platform-assets test-cli test-js test-js-build test-styleguide test-python test-snuba test-symbolicator test-acceptance lint lint-python lint-js publish
 
 
 ############################
@@ -216,12 +218,13 @@ travis-noop:
 .PHONY: travis-test-lint
 travis-test-lint: lint-python lint-js
 
-.PHONY: travis-test-postgres travis-test-acceptance travis-test-snuba travis-test-symbolicator travis-test-js travis-test-cli travis-test-dist
+.PHONY: travis-test-postgres travis-test-acceptance travis-test-snuba travis-test-symbolicator travis-test-js travis-test-js-build travis-test-cli travis-test-dist
 travis-test-postgres: test-python
 travis-test-acceptance: test-acceptance
 travis-test-snuba: test-snuba
 travis-test-symbolicator: test-symbolicator
 travis-test-js: test-js
+travis-test-js-build: test-js-build
 travis-test-cli: test-cli
 travis-test-plugins: test-plugins
 travis-test-dist:
@@ -244,6 +247,7 @@ travis-scan-acceptance: travis-noop
 travis-scan-snuba: travis-noop
 travis-scan-symbolicator: travis-noop
 travis-scan-js: travis-noop
+travis-scan-js-build: travis-noop
 travis-scan-cli: travis-noop
 travis-scan-dist: travis-noop
 travis-scan-lint: scan-python
